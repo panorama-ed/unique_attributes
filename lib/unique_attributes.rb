@@ -64,6 +64,8 @@ module UniqueAttributes
       # If we have blank unique attributes.
       if blank_attrs.size > 0
         attempts = 0
+        attr_group = "(?<attr>#{blank_attrs.keys.join('|')})"
+        other_fields = "(, [\\w`'\".]+)*"
 
         # Keep retrying until the save works.
         while !self.persisted?
@@ -77,25 +79,29 @@ module UniqueAttributes
               yield # Perform the save, and see if it works.
             end
           rescue ActiveRecord::RecordNotUnique => error
-            attr_group = "(?<attr>#{blank_attrs.keys.join('|')})"
-            other_fields = "(, [\\w`'\"]+)*"
-            sqlite3_regex = /column(s)? #{attr_group}#{other_fields} (is|are) not unique/
-            postgresql_regex = /Key \(#{attr_group}#{other_fields}\)=\([\w\s,]*\) already exists/
+            if attempts <= SAVE_ATTEMPTS_LIMIT
+              match = [
+                # Postgres
+                /Key \(#{attr_group}#{other_fields}\)=\([\w\s,]*\) already exists/,
+                # SQLite
+                /column(s)? #{attr_group}#{other_fields} (is|are) not unique/,
+                /UNIQUE constraint failed: #{self.class.table_name}\.#{attr_group}#{other_fields}:/
+              ].inject(nil) { |m, regex| m || regex.match(error.message) }
 
-            match = sqlite3_regex.match(error.message) ||
-                    postgresql_regex.match(error.message)
-
-            # If we've managed to hit the same unique attribute of a record
-            # already in the database, then we should wipe the attribute and try
-            # again, unless we've already done this many times in which case we
-            # should let the error bubble up.
-            if match && attempts <= SAVE_ATTEMPTS_LIMIT
-              attr = match[:attr].to_sym
-              blank_attrs = { attr => blank_attrs[attr] }
-              write_attribute(attr, nil)
-            else
-              raise error # If something else went wrong, let it propagate.
+              # If we've managed to hit the same unique attribute of a record
+              # already in the database, then we should wipe the attribute and
+              # try again
+              if match
+                attr = match[:attr].to_sym
+                blank_attrs = { attr => self.class.unique_attributes[attr] }
+                write_attribute(attr, nil)
+                next
+              end
             end
+
+            # If we're already at the attempts limit, or some other attribute
+            # was the problem, let the error propagate.
+            raise error
           end
         end
       else # If the unique values are already set, perform a regular save.

@@ -109,5 +109,22 @@ RSpec.shared_examples ".unique_attribute" do
       MultiattributeTestClass.create!
       MultiattributeTestClass.create!
     end
+
+    context "when there's more than one conflict" do
+      it "retries all conflicting fields" do
+        # We stub the username/password generation such that the first time both
+        # username and password are generated, there are conflicts. We use
+        # expectations to ensure that both fields are re-generated as needed.
+        expect(MultiattributeTestClass).to receive(:generate_username).
+          exactly(3).times.
+          and_return("1", "1", "2")
+        expect(MultiattributeTestClass).to receive(:generate_password).
+          exactly(3).times.
+          and_return("A", "A", "B")
+
+        MultiattributeTestClass.create!
+        MultiattributeTestClass.create!
+      end
+    end
   end
 end
