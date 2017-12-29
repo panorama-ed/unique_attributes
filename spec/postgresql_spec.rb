@@ -1,5 +1,6 @@
 require "spec_helper"
 require "shared/unique_attributes_examples"
+require "config/test_setup_migration"
 
 RSpec.describe "PostgreSQL" do
   before :all do
