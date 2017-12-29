@@ -1,4 +1,11 @@
-class TestSetupMigration < ActiveRecord::Migration
+migration_class =
+  if ActiveRecord::VERSION::MAJOR >= 5
+    ActiveRecord::Migration[4.2]
+  else
+    ActiveRecord::Migration
+  end
+
+class TestSetupMigration < migration_class
   def up
     return if ActiveRecord::Base.connection.table_exists? :test_classes
 
