@@ -30,6 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.1"
   spec.add_development_dependency "rspec-mocks", "~> 3.1"
-  spec.add_development_dependency "rubocop", "~> 0.28"
+  spec.add_development_dependency "rubocop", "~> 0.49"
   spec.add_development_dependency "sqlite3", "~> 1.3"
 end
