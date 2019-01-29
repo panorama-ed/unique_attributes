@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "database_cleaner", "~> 1.4"
   spec.add_development_dependency "overcommit", "~> 0.21"
   spec.add_development_dependency "pg", "~> 0.18"
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rake", "~> 12.3"
   spec.add_development_dependency "rspec", "~> 3.1"
   spec.add_development_dependency "rspec-mocks", "~> 3.1"
   spec.add_development_dependency "rubocop", "~> 0.49"
