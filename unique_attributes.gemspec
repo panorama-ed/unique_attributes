@@ -1,5 +1,4 @@
-# coding: utf-8
-lib = File.expand_path("../lib", __FILE__)
+lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "unique_attributes/version"
 
@@ -22,14 +21,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activerecord", ">= 4.0"
   spec.add_dependency "activesupport", ">= 4.0"
 
-  spec.add_development_dependency "bundler", "~> 1.7"
-  spec.add_development_dependency "codeclimate-test-reporter", "~> 0.4"
-  spec.add_development_dependency "database_cleaner", "~> 1.4"
-  spec.add_development_dependency "overcommit", "~> 0.21"
-  spec.add_development_dependency "pg", "~> 0.18"
-  spec.add_development_dependency "rake", "~> 12.3"
-  spec.add_development_dependency "rspec", "~> 3.1"
-  spec.add_development_dependency "rspec-mocks", "~> 3.1"
-  spec.add_development_dependency "rubocop", "~> 0.49"
-  spec.add_development_dependency "sqlite3", "~> 1.3"
+  spec.add_development_dependency "bundler"
+  spec.add_development_dependency "codecov"
+  spec.add_development_dependency "database_cleaner"
+  spec.add_development_dependency "pg"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "rspec-mocks"
+  spec.add_development_dependency "sqlite3", "~> 1.3.13"
 end

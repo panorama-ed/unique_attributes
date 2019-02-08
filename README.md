@@ -1,4 +1,7 @@
-[![Code Climate](https://codeclimate.com/github/panorama-ed/unique_attributes/badges/gpa.svg)](https://codeclimate.com/github/panorama-ed/unique_attributes) [![Test Coverage](https://codeclimate.com/github/panorama-ed/unique_attributes/badges/coverage.svg)](https://codeclimate.com/github/panorama-ed/unique_attributes) [![Inline docs](http://inch-ci.org/github/panorama-ed/unique_attributes.png)](http://inch-ci.org/github/panorama-ed/unique_attributes) [![Build Status](https://travis-ci.org/panorama-ed/unique_attributes.svg)](https://travis-ci.org/panorama-ed/unique_attributes) [![Gem Version](https://badge.fury.io/rb/unique_attributes.svg)](http://badge.fury.io/rb/unique_attributes)
+[![Code Coverage](https://codecov.io/gh/panorama-ed/unique_attributes/branch/master/graph/badge.svg)](https://codecov.io/gh/panorama-ed/unique_attributes)
+[![Inline docs](http://inch-ci.org/github/panorama-ed/unique_attributes.png)](http://inch-ci.org/github/panorama-ed/unique_attributes)
+[![Build Status](https://travis-ci.com/panorama-ed/unique_attributes.svg)](https://travis-ci.com/panorama-ed/unique_attributes)
+[![Gem Version](https://badge.fury.io/rb/unique_attributes.svg)](http://badge.fury.io/rb/unique_attributes)
 
 # UniqueAttributes
 

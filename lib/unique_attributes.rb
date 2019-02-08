@@ -15,9 +15,9 @@ module UniqueAttributes
   # generation algorithms.
   SAVE_ATTEMPTS_LIMIT = 50
 
-  included do
+  included do # rubocop:disable Metrics/BlockLength
     class_attribute :unique_attributes
-    self.unique_attributes = Hash.new
+    self.unique_attributes = ({})
 
     # Indicate that a given attribute is unique and should be auto-assigned with
     # the given block.
@@ -62,13 +62,13 @@ module UniqueAttributes
       blank_attrs = blank_unique_attributes
 
       # If we have blank unique attributes.
-      if blank_attrs.size > 0
+      if !blank_attrs.empty?
         attempts = 0
         attr_group = "(?<attr>#{blank_attrs.keys.join('|')})"
         other_fields = "(, [\\w`'\".]+)*"
 
         # Keep retrying until the save works.
-        while !self.persisted?
+        until persisted?
           attempts += 1 # Keep track of the number of times we've tried to save.
 
           # Set each of the blank attributes with the given blocks.
@@ -79,19 +79,19 @@ module UniqueAttributes
               yield # Perform the save, and see if it works.
             end
           rescue ActiveRecord::RecordNotUnique => error
-            if attempts <= SAVE_ATTEMPTS_LIMIT
+            if attempts <= SAVE_ATTEMPTS_LIMIT # rubocop:disable Metrics/BlockNesting
               match = [
                 # Postgres
-                /Key \(#{attr_group}#{other_fields}\)=\([\w\s,]*\) already exists/,
+                /Key \(#{attr_group}#{other_fields}\)=\([\w\s,]*\) already exists/, # rubocop:disable Metrics/LineLength
                 # SQLite
                 /column(s)? #{attr_group}#{other_fields} (is|are) not unique/,
-                /UNIQUE constraint failed: #{self.class.table_name}\.#{attr_group}#{other_fields}:/
+                /UNIQUE constraint failed: #{self.class.table_name}\.#{attr_group}#{other_fields}:/ # rubocop:disable Metrics/LineLength
               ].inject(nil) { |m, regex| m || regex.match(error.message) }
 
               # If we've managed to hit the same unique attribute of a record
               # already in the database, then we should wipe the attribute and
               # try again
-              if match
+              if match # rubocop:disable Metrics/BlockNesting
                 attr = match[:attr].to_sym
                 blank_attrs = { attr => self.class.unique_attributes[attr] }
                 write_attribute(attr, nil)
