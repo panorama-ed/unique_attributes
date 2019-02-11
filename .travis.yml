@@ -1,16 +1,39 @@
 language: ruby
 rvm:
-- 2.0.0
-- 2.1.4
+- 2.6
+- 2.5
+- 2.4 # Keep this in sync with .rubocop.yml
+# We test up to the latest version of Ruby here, and test these Ruby versions
+# against all support ActiveRecord versions. One test will be "duplicated"
+# below when we calculate code coverage, but I don't know how to avoid that and
+# still test all combinations of Ruby and ActiveRecord.
 before_script:
-  - psql -c 'create database unique_attributes_test;' -U postgres
-script: bundle exec rspec
-addons:
-  postgresql: "9.3"
-  code_climate:
-    repo_token: 77d19511a3073b3dcadd6b4abbc87e5dd46c3db1ba6815a32545e91d9996d820
+- psql -c 'create database unique_attributes_test;' -U postgres
+script:
+- bundle exec rspec
+services:
+- postgresql
+env:
+  matrix:
+  - ACTIVERECORD_VERSION="~> 5.2.0"
+  - ACTIVERECORD_VERSION="~> 5.1.0"
+  - ACTIVERECORD_VERSION="~> 5.0.0"
+matrix:
+  include:
+  - rvm: 2.6
+    script:
+    - bundle exec rspec
+    - gem install --no-document rubocop rubocop-rspec-focused && rubocop
+    env:
+    - CODE_COVERAGE=true
+    - ACTIVERECORD_VERSION="~> 5.2.0"
+branches:
+  only:
+  - master
+  # We always run tests for PRs. This prevents running PR tests twice (once "for
+  # the PR" and once "for the branch"), though we do want tests to run always
+  # run on master.
 notifications:
   email: false
-  hipchat:
-    rooms:
-      secure: Q3zxZGqtrcbhw3S038A1LSmWks5uEKxKUjGee5q30PWCkoNEg9VxgbcMH2ZzMA10BCvHcKMI4yUk7yy/WyO8UKYprFA8707M7FjBmxfY62GK9K58sPBDUrnpCAfxGqyZZ1oXofSJamNPHh3G8U18yZhWt4j/5XHrwzBo8+p/0bI=
+  slack:
+    secure: YcoBonmPRQz/iBWAiL6SFJKihIYExDwJx/lwfxBVi9mj6n9A5AEjLA5gIdcjpyZVeIDVkCtDcs+A0S9VBFiUZjL96UjnXtWCCqw9tloGUu365hnYQhqPmbEmdneuobcgbKXQBkv5k1Lkq7icxsZhkr/YVJKElgxlk0OSEzbnUV0=

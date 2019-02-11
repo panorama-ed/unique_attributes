@@ -1,5 +1,6 @@
 require "spec_helper"
 
+require "support/application_record"
 require "support/multiattribute_test_class"
 require "support/scoped_test_class"
 require "support/test_class"
