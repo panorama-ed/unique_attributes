@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "unique_attributes/version"
@@ -28,5 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "rspec-mocks"
-  spec.add_development_dependency "sqlite3", "~> 1.3.13"
+  spec.add_development_dependency "sqlite3"
 end

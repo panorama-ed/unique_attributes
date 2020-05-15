@@ -7,3 +7,4 @@ postgresql_test:
   adapter: postgresql
   database: unique_attributes_test
   username: postgres
+  password: postgres

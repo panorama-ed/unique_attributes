@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 require "support/application_record"
@@ -64,8 +66,7 @@ RSpec.shared_examples ".unique_attribute" do
   end
 
   it "does not retry the save when an unrelated uniqueness violation occurs" do
-    expect(TestClass).to receive(:generate_username).
-      exactly(2).times.
+    expect(TestClass).to receive(:generate_username).twice.
       and_call_original
 
     obj1.save!
@@ -103,8 +104,7 @@ RSpec.shared_examples ".unique_attribute" do
       expect(MultiattributeTestClass).to receive(:generate_username).
         exactly(3).times.
         and_return("1", "1", "2")
-      expect(MultiattributeTestClass).to receive(:generate_password).
-        exactly(2).times.
+      expect(MultiattributeTestClass).to receive(:generate_password).twice.
         and_return("A", "B")
 
       MultiattributeTestClass.create!
