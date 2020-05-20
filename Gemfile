@@ -9,7 +9,4 @@ gemspec
 
 group :development do
   gem "panolint", github: "panorama-ed/panolint"
-  if ENV["CI"] == "true" && ENV["ACTIVERECORD_VERSION"]
-    gem "activerecord", ENV["ACTIVERECORD_VERSION"]
-  end
 end
