@@ -8,3 +8,4 @@ postgresql_test:
   host: localhost
   database: unique_attributes_test
   username: postgres
+  password: postgres
