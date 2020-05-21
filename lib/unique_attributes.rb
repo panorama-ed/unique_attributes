@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "unique_attributes/version"
 
 require "active_support/concern"
@@ -78,15 +80,15 @@ module UniqueAttributes
             ActiveRecord::Base.transaction(requires_new: true) do
               yield # Perform the save, and see if it works.
             end
-          rescue ActiveRecord::RecordNotUnique => error
+          rescue ActiveRecord::RecordNotUnique => e
             if attempts <= SAVE_ATTEMPTS_LIMIT # rubocop:disable Metrics/BlockNesting
               match = [
                 # Postgres
                 /Key \(#{attr_group}#{other_fields}\)=\([\w\s,]*\) already exists/, # rubocop:disable Metrics/LineLength
                 # SQLite
                 /column(s)? #{attr_group}#{other_fields} (is|are) not unique/,
-                /UNIQUE constraint failed: #{self.class.table_name}\.#{attr_group}#{other_fields}:/ # rubocop:disable Metrics/LineLength
-              ].inject(nil) { |m, regex| m || regex.match(error.message) }
+                /UNIQUE constraint failed: #{self.class.table_name}\.#{attr_group}#{other_fields}/ # rubocop:disable Metrics/LineLength
+              ].inject(nil) { |m, regex| m || regex.match(e.message) }
 
               # If we've managed to hit the same unique attribute of a record
               # already in the database, then we should wipe the attribute and
@@ -101,7 +103,7 @@ module UniqueAttributes
 
             # If we're already at the attempts limit, or some other attribute
             # was the problem, let the error propagate.
-            raise error
+            raise e
           end
         end
       else # If the unique values are already set, perform a regular save.

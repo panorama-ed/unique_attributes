@@ -5,5 +5,7 @@ sqlite3_test:
 
 postgresql_test:
   adapter: postgresql
+  host: localhost
   database: unique_attributes_test
   username: postgres
+  password: postgres

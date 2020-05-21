@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
 source "https://rubygems.org"
+
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # Specify your gem's dependencies in unique_attributes.gemspec
 gemspec
 
-if ENV["TRAVIS"] == "true" && ENV["ACTIVERECORD_VERSION"]
-  gem "activerecord", ENV["ACTIVERECORD_VERSION"]
+group :development do
+  gem "panolint", github: "panorama-ed/panolint"
 end
