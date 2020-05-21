@@ -38,5 +38,5 @@ jobs:
         bundle config path vendor/bundle
         bundle install --jobs 4 --retry 3
     - run: bundle exec rubocop
-    - run: PGPASSWORD=postgres psql -c 'create database unique_attributes_test;' -U postgres
+    - run: bundle exec rake db:create
     - run: bundle exec rspec
