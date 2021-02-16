@@ -1,4 +1,4 @@
-[![Code Coverage](https://codecov.io/gh/panorama-ed/unique_attributes/branch/master/graph/badge.svg)](https://codecov.io/gh/panorama-ed/unique_attributes)
+[![Code Coverage](https://codecov.io/gh/panorama-ed/unique_attributes/branch/main/graph/badge.svg)](https://codecov.io/gh/panorama-ed/unique_attributes)
 [![Inline docs](http://inch-ci.org/github/panorama-ed/unique_attributes.png)](http://inch-ci.org/github/panorama-ed/unique_attributes)
 [![Build Status](https://travis-ci.com/panorama-ed/unique_attributes.svg)](https://travis-ci.com/panorama-ed/unique_attributes)
 [![Gem Version](https://badge.fury.io/rb/unique_attributes.svg)](http://badge.fury.io/rb/unique_attributes)
@@ -113,4 +113,4 @@ and conform to the Rubocop style specified.** We use
 ## License
 
 UniqueAttributes is released under the
-[MIT License](https://github.com/panorama-ed/unique_attributes/blob/master/LICENSE.txt).
+[MIT License](https://github.com/panorama-ed/unique_attributes/blob/main/LICENSE.txt).
