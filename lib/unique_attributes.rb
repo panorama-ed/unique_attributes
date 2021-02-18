@@ -34,7 +34,7 @@ module UniqueAttributes
       # uniqueness.
       uniqueness_options = scope ? { scope: scope } : true
 
-      # Note: This is restricted to update only since the attribute value is not
+      # NOTE: This is restricted to update only since the attribute value is not
       # generated until we save the model the first time. The around_save
       # callback happens after validation, but before saving, so we need to make
       # it past validation at least one time before checking for a valid code.
@@ -60,55 +60,52 @@ module UniqueAttributes
     # Ensures that the attribute value exists and is unique (relying on a
     # database-level unique index) when saving. This will set the value on the
     # first save of the object.
-    def save_with_unique_attributes
+    def save_with_unique_attributes(&block)
       blank_attrs = blank_unique_attributes
 
-      # If we have blank unique attributes.
-      if !blank_attrs.empty?
-        attempts = 0
-        attr_group = "(?<attr>#{blank_attrs.keys.join('|')})"
-        other_fields = "(, [\\w`'\".]+)*"
+      # If the unique values are already set, perform a regular save.
+      return yield if blank_attrs.empty?
 
-        # Keep retrying until the save works.
-        until persisted?
-          attempts += 1 # Keep track of the number of times we've tried to save.
+      attempts = 0
+      attr_group = "(?<attr>#{blank_attrs.keys.join('|')})"
+      other_fields = "(, [\\w`'\".]+)*"
 
-          # Set each of the blank attributes with the given blocks.
-          blank_attrs.each { |attr, block| write_attribute(attr, block.call) }
+      # Keep retrying until the save works.
+      until persisted?
+        attempts += 1 # Keep track of the number of times we've tried to save.
 
-          begin
-            ActiveRecord::Base.transaction(requires_new: true) do
-              yield # Perform the save, and see if it works.
-            end
-          rescue ActiveRecord::RecordNotUnique => e
-            if attempts <= SAVE_ATTEMPTS_LIMIT # rubocop:disable Metrics/BlockNesting
-              match = [
-                # Postgres
-                /Key \(#{attr_group}#{other_fields}\)=\([\w\s,]*\) already exists/, # rubocop:disable Metrics/LineLength
-                # SQLite
-                /column(s)? #{attr_group}#{other_fields} (is|are) not unique/,
-                /UNIQUE constraint failed: #{self.class.table_name}\.#{attr_group}#{other_fields}/ # rubocop:disable Metrics/LineLength
-              ].inject(nil) { |m, regex| m || regex.match(e.message) }
+        assign_unique_attributes(blank_attrs)
 
-              # If we've managed to hit the same unique attribute of a record
-              # already in the database, then we should wipe the attribute and
-              # try again
-              if match # rubocop:disable Metrics/BlockNesting
-                attr = match[:attr].to_sym
-                blank_attrs = { attr => self.class.unique_attributes[attr] }
-                write_attribute(attr, nil)
-                next
-              end
-            end
+        begin
+          ActiveRecord::Base.transaction(requires_new: true, &block)
+        rescue ActiveRecord::RecordNotUnique => e
+          # Let the error propagate if we're at the attempt limit.
+          raise e if attempts > SAVE_ATTEMPTS_LIMIT
 
-            # If we're already at the attempts limit, or some other attribute
-            # was the problem, let the error propagate.
-            raise e
-          end
+          match = [
+            # Postgres
+            /Key \(#{attr_group}#{other_fields}\)=\([\w\s,]*\) already exists/,
+            # SQLite
+            /column(s)? #{attr_group}#{other_fields} (is|are) not unique/,
+            /UNIQUE constraint failed: #{self.class.table_name}\.#{attr_group}#{other_fields}/ # rubocop:disable Metrics/LineLength
+          ].inject(nil) { |m, regex| m || regex.match(e.message) }
+
+          # Let the error propagate if some other attribute was the problem.
+          raise e unless match
+
+          # If we've managed to hit the same unique attribute of a record
+          # already in the database, then we should wipe the attribute and
+          # try again
+          attr = match[:attr].to_sym
+          blank_attrs = { attr => self.class.unique_attributes[attr] }
+          write_attribute(attr, nil)
         end
-      else # If the unique values are already set, perform a regular save.
-        yield
       end
+    end
+
+    # Set each of the attributes with their given blocks.
+    def assign_unique_attributes(attrs)
+      attrs.each { |attr, block| write_attribute(attr, block.call) }
     end
   end
 end
